@@ -57,7 +57,7 @@ namespace seleniumTraining
         {
             Console.WriteLine("Test Two");
         }
-        [Ignore]
+        //[Ignore]
         [TestMethod]
         public void ThirdTest()
         {

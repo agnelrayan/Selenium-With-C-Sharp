@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using AventStack.ExtentReports;
+using AventStack.ExtentReports.Reporter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -16,8 +18,8 @@ namespace seleniumTraining
     [TestClass]
     public class LocatorsEx
     {
-        // IWebDriver driver = new ChromeDriver();
-        IWebDriver driver = new InternetExplorerDriver();
+        IWebDriver driver = new ChromeDriver();
+        //IWebDriver driver = new InternetExplorerDriver();
 
         public object SeleniumExtras { get; private set; }
 
@@ -1551,6 +1553,57 @@ namespace seleniumTraining
             string actual = home.GetName(first,last);
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void ScreenShotRemoteBrowserTest()
+        {
+               
+            driver.Navigate().GoToUrl("http://www.google.com");
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
+            driver.Manage().Window.Maximize();
+            Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
+            ss.SaveAsFile(@"D:\\sele\\ss.png",ScreenshotImageFormat.Png);
+           
+
+        }
+        [TestMethod]
+        public void ExtentTestCase()
+        {
+            var htmlReporter = new ExtentHtmlReporter("extentReport.html");
+            var extent = new ExtentReports();
+            extent.AttachReporter(htmlReporter);
+
+            //Hard coding
+            extent.AddSystemInfo("Operating System:", "Windows 10");
+            extent.AddSystemInfo("HostName: ", "Antony Rayan");
+            extent.AddSystemInfo("Browser: ", "Google Chrome");
+
+            var test = extent.CreateTest("ExtentTestCase");
+            test.Log(Status.Info, "Step 1: Test case starts.");
+            test.Log(Status.Pass, "Step 2: Test case for pass");
+            test.Log(Status.Fail,"Step 3: Test case failed");
+            test.Pass("Screenshot",MediaEntityBuilder.CreateScreenCaptureFromPath("screenshot.png").Build());
+            test.Pass("Screenshot").AddScreenCaptureFromPath("screenshot.png");
+            extent.Flush();
+
+
+        }
+
+        public void TakeScreeshotTest()
+        {
+            try
+            {
+                driver.Navigate().GoToUrl("https://twitter.com/");
+                driver.Manage().Window.Maximize();
+                ((ITakesScreenshot)driver).GetScreenshot().SaveAsFile(DateTime.Now.ToShortDateString() + ".png", ScreenshotImageFormat.Png);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+        }
+
+
     }
 
 
